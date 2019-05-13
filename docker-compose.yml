@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: neo4j
+    environment:
+      - NEO4J_AUTH=none
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - $HOME/neo4j/data:/data
+    restart: always
+  klinikdaten-docker:
+    network_mode: host
+    build: .
+    image: klinikdaten-docker
+    ports:
+      - "8080:8080"
+    restart: always

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload eines Klinikdaten Files</title>
+</head>
+<body>
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <label>Wählen Sie eine Textdatei (*.csv) von Ihrem Rechner aus.
+        <input name="klinikdaten" type="file" accept="text/*">
+    </label>
+    <button>Hochladen</button>
+</form>
+</body>
+</html>
