@@ -1,7 +1,8 @@
 package com.example.demo.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.NonNull;
 import org.neo4j.ogm.annotation.*;
 
 @Data
@@ -10,7 +11,6 @@ public class Diagnose {
     @Id
     @GeneratedValue
     @JsonProperty
-    @EqualsAndHashCode.Exclude
     private Long id;
     @JsonProperty
     @NonNull
