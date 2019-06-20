@@ -9,7 +9,7 @@ import org.neo4j.ogm.annotation.NodeEntity;
 
 @Data
 @NodeEntity
-public class ICDKode {
+public class ICDKode implements NeighbourhoodItem<ICDKode> {
     @Id
     @GeneratedValue
     @JsonProperty
@@ -26,4 +26,14 @@ public class ICDKode {
     @JsonProperty
     @NonNull
     private int icdVersion;
+
+    @Override
+    public int calculateNeighbourhoodDistanceTo(ICDKode other) {
+        int distance = 0;
+        if (this.icdKomponente != other.icdKomponente) distance++;
+        if (this.code != other.code) distance++;
+        if (this.code2 != other.code2) distance++;
+        if (this.icdVersion != other.icdVersion) distance++;
+        return distance;
+    }
 }

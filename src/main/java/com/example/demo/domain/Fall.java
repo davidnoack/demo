@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Data
 @NodeEntity
-public class Fall {
+public class Fall implements NeighbourhoodItem<Fall> {
     @Id
     @NonNull
     @JsonProperty
@@ -23,4 +23,12 @@ public class Fall {
     @NonNull
     @JsonProperty
     private LocalDate aufnahmeDatum;
+
+    @Override
+    public int calculateNeighbourhoodDistanceTo(Fall other) {
+        int distance = 0;
+        distance += patient.calculateNeighbourhoodDistanceTo(other.patient);
+        if (this.aufnahmeDatum.compareTo(other.aufnahmeDatum) != 0) distance++;
+        return distance;
+    }
 }

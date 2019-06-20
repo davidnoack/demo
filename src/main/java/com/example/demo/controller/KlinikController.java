@@ -1,10 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.Diagnose;
-import com.example.demo.domain.Fall;
-import com.example.demo.domain.ICDKode;
-import com.example.demo.domain.Patient;
+import com.example.demo.domain.*;
 import com.example.demo.service.DiagnoseService;
+import com.example.demo.service.LevenshteinService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +22,12 @@ import java.util.Set;
 public class KlinikController {
 
     private DiagnoseService diagnoseService = new DiagnoseService();
+    private LevenshteinService levenshteinService = new LevenshteinService();
+
+    @RequestMapping("/")
+    public String home() {
+        return "redirect:/index.html";
+    }
 
     @RequestMapping("/upload")
     public String uploadFile(@RequestParam("klinikdaten") MultipartFile klinikDaten) throws IOException {
@@ -61,6 +65,32 @@ public class KlinikController {
             diagnosesToCreate.add(diagnose);
         }
         diagnosesToCreate.forEach(diagnoseService::createOrUpdate);
-        return "index";
+        createLevenshteinRelationsFromDiagnoses(diagnosesToCreate);
+        createLevenshteinRelations(new HashSet<>(icdKodeMap.values()));
+        return "redirect:/index.html";
+    }
+
+    private void createLevenshteinRelations(Set<NeighbourhoodItem> possibleLevenshteinNeighbours) {
+        NeighbourhoodItem[] possibleNeighboursAsArray = possibleLevenshteinNeighbours.toArray(new NeighbourhoodItem[possibleLevenshteinNeighbours.size()]);
+        for (int i = 1; i < possibleNeighboursAsArray.length; i++) {
+            for (int k = 0; k < possibleNeighboursAsArray.length && k < i; k++) {
+                if (possibleNeighboursAsArray[i].isLevenshteinNeighbourTo(possibleNeighboursAsArray[k])) {
+                    levenshteinService.createOrUpdate(new LevenshteinNeighbour(possibleNeighboursAsArray[i], possibleNeighboursAsArray[k]));
+                }
+            }
+        }
+    }
+
+    private void createLevenshteinRelationsFromDiagnoses(Set<Diagnose> possibleLevenshteinNeighbours) {
+        Diagnose[] possibleNeighboursAsArray = possibleLevenshteinNeighbours.toArray(new Diagnose[possibleLevenshteinNeighbours.size()]);
+        for (int i = 1; i < possibleNeighboursAsArray.length; i++) {
+            for (int k = 0; k < possibleNeighboursAsArray.length && k < i; k++) {
+                Patient patient1 = possibleNeighboursAsArray[i].getFall().getPatient();
+                Patient patient2 = possibleNeighboursAsArray[k].getFall().getPatient();
+                if (!patient1.equals(patient2) && possibleNeighboursAsArray[i].isLevenshteinNeighbourTo(possibleNeighboursAsArray[k])) {
+                    levenshteinService.createOrUpdate(new LevenshteinNeighbour(patient1, patient2));
+                }
+            }
+        }
     }
 }
