@@ -1,6 +1,5 @@
 package com.example.demo.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NonNull;
 import org.neo4j.ogm.annotation.Id;
@@ -14,14 +13,11 @@ import java.time.LocalDate;
 public class Fall implements NeighbourhoodItem<Fall> {
     @Id
     @NonNull
-    @JsonProperty
     private Long fallnummer;
     @NonNull
-    @JsonProperty
     @Relationship(type = "RECEIVES_TREATMENT", direction = Relationship.INCOMING)
     private Patient patient;
     @NonNull
-    @JsonProperty
     private LocalDate aufnahmeDatum;
 
     @Override
